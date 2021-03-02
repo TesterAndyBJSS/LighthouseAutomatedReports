@@ -10,8 +10,8 @@ const launchChromeAndRunLighthouse = url => {
 
     return chromeLauncher.launch().then(chrome => {
         const opts = {
-         port: chrome.port,            
-         onlyCategories: ['performance'],          
+            port: chrome.port,
+            onlyCategories: ['performance'],
         };
         return lighthouse(url, opts).then(results => {
 
@@ -74,11 +74,11 @@ const compareReports = (from, to) => {
 
             console.log(logColor, `${from["audits"][auditObj].title} is ${log}`);
             console.log(logColor,
-            'Was: ' + Math.round((from["audits"][auditObj].numericValue + Number.EPSILON) * 100) / 100, 
-            '\n Now: ' + Math.round((to["audits"][auditObj].numericValue + Number.EPSILON) * 100) / 100
+                'Was: ' + Math.round((from["audits"][auditObj].numericValue + Number.EPSILON) * 100) / 100,
+                '\n Now: ' + Math.round((to["audits"][auditObj].numericValue + Number.EPSILON) * 100) / 100
             );
-            
-            console.log("\x1b[37m",'');
+
+            console.log("\x1b[37m", '');
         }
     }
 };
@@ -95,12 +95,12 @@ if (argv.from && argv.to) {
         dirName = dirName + urlObj.pathname.replace(/\//g, "_");
     }
 
-    if (!fs.existsSync(dirName)) {
-        fs.mkdirSync(dirName);
+    if (!fs.existsSync('reports/' + dirName)) {
+        fs.mkdirSync('reports/' + dirName);
     }
 
     launchChromeAndRunLighthouse(argv.url).then(results => {
-        const prevReports = glob(`${dirName}/*.json`, {
+        const prevReports = glob('reports/' + `${dirName}/*.json`, {
             sync: true
         });
 
@@ -117,14 +117,14 @@ if (argv.from && argv.to) {
             const recentReport = new Date(max).toISOString();
 
             const recentReportContents = getContents(
-                dirName + "/" + recentReport.replace(/:/g, "_") + ".json"
+                'reports/' + dirName + "/" + recentReport.replace(/:/g, "_") + ".json"
             );
 
             compareReports(recentReportContents, results.js);
         }
 
         fs.writeFile(
-            `${dirName}/${results.js["fetchTime"].replace(/:/g, "_")}.json`,
+            `reports/${dirName}/${results.js["fetchTime"].replace(/:/g, "_")}.json`,
             results.json,
             err => {
                 if (err) throw err;
