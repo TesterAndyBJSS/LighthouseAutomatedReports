@@ -1,5 +1,14 @@
 A Tool that will compare google lighthouse reports
 
+###
+Required Set up:
+
+npm install lighthouse --save-dev
+npm install --save-dev yargs
+
+###
+
+
 Each time a new URL is provided a report is ran and saved to the local directory. 
 
 Two ways to use this script

@@ -95,7 +95,12 @@ if (argv.from && argv.to) {
         dirName = dirName + urlObj.pathname.replace(/\//g, "_");
     }
 
-    if (!fs.existsSync('reports/' + dirName)) {
+    if (!fs.existsSync('reports/' + dirName)) 
+    {
+        if (!fs.existsSync('reports')) 
+        {
+            fs.mkdirSync('reports')
+        }
         fs.mkdirSync('reports/' + dirName);
     }
 
