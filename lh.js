@@ -14,11 +14,6 @@ const launchChromeAndRunLighthouse = url => {
             onlyCategories: ['performance'],
         };
         return lighthouse(url, opts).then(results => {
-
-            fs.writeFile("testingsomething.json", results.report, err => {
-                if (err) throw err;
-            });
-
             return chrome.kill().then(() => {
                 return {
                     js: results.lhr,
