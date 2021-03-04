@@ -3,7 +3,10 @@ A Tool that will compare google lighthouse reports
 ###
 Required Set up:
 
+Built on Node version v15.8.0, you may need to npm to latest version if you have issues running.
+
 npm install --save-dev
+
 
 ###
 
