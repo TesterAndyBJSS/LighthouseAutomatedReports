@@ -3,8 +3,7 @@ A Tool that will compare google lighthouse reports
 ###
 Required Set up:
 
-npm install lighthouse --save-dev
-npm install --save-dev yargs
+npm install --save-dev
 
 ###
 
