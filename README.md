@@ -25,7 +25,7 @@ This simply runs a report on the given URL, if this is the first time it has ran
 Each subsequent run will compare to this most recent and provide comparrison stats this way.
 ##
 
-##2) Provide one url to run an Average report
+## 2) Provide one url to run an Average report
 This takes slightly longer as requires running multiple reports
 
 ```
