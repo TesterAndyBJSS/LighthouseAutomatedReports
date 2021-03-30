@@ -155,7 +155,7 @@ const runCheck = () => {
 let average = [1, 2, 3]
 runAverage = async () => {
     for (const run of average) {
-        await new Promise(resolve => setTimeout(resolve, 20000)).then(runCheck());
+        await new Promise(resolve => setTimeout(resolve, 25000)).then(runCheck());
     }
     displayAverage();
 };
