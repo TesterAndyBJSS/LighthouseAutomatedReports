@@ -138,6 +138,10 @@ const runCheck = () => {
             compareReports(recentReportContents, results.js);
         }
 
+        else {
+            compareReports(results.js, results.js)
+        }
+
         fs.writeFile(
             `reports/${dirName}/single/${results.js["fetchTime"].replace(/:/g, "_")}.json`,
             results.json,
@@ -151,7 +155,7 @@ const runCheck = () => {
 let average = [1, 2, 3]
 runAverage = async () => {
     for (const run of average) {
-        await new Promise(resolve => setTimeout(resolve, 70000)).then(runCheck());
+        await new Promise(resolve => setTimeout(resolve, 20000)).then(runCheck());
     }
     displayAverage();
 };
@@ -191,12 +195,12 @@ function displayHelper(percentageDiff) {
     return (() => {
         if (Math.sign(percentageDiff) === 1) {
             logColor = "\x1b[31m";
-            return `${percentageDiff.toString().replace("-", "") + "%"} slower`;
+            return `${percentageDiff.toString().replace("-", "") + "%"} decrease`;
         } else if (Math.sign(percentageDiff) === 0) {
             return "unchanged";
         } else {
             logColor = "\x1b[32m";
-            return `${percentageDiff.toString().replace("-", "") + "%"} faster`;
+            return `${percentageDiff.toString().replace("-", "") + "%"} increase`;
         }
     })();
 }
@@ -206,6 +210,11 @@ displayAverage = async () => {
     const averageChangeNow = { fcp: 0, lcp: 0, tbt: 0, cls: 0, tti: 0 };
     var recentReportPathStr;
     var recentAverageReport;
+    averageChangeNow.fcp = ((averageObject.now[0] + averageObject.now[5] + averageObject.now[10]) / 3);
+    averageChangeNow.lcp = ((averageObject.now[1] + averageObject.now[6] + averageObject.now[11]) / 3);
+    averageChangeNow.tbt = ((averageObject.now[2] + averageObject.now[7] + averageObject.now[12]) / 3);
+    averageChangeNow.cls = ((averageObject.now[3] + averageObject.now[8] + averageObject.now[13]) / 3);
+    averageChangeNow.tti = ((averageObject.now[4] + averageObject.now[9] + averageObject.now[14]) / 3);
 
     const prevAverageReports = glob('reports/' + `${dirName}/average/*.json`, {
         sync: true
@@ -223,7 +232,7 @@ displayAverage = async () => {
             dateParts[0] = dateParts[0].replace('/', '');
             dateParts[2] = dateParts[2].split(',')[0];
 
-            var formattedTime = (dateParts[2] + '-' + dateParts[1].toString() + '-' + dateParts[0]) + 'T' + timeOfReport + 'Z'
+            var formattedTime = (dateParts[2] + '-' + dateParts[1].toString() + '-' + dateParts[0]) + 'T' + timeOfReport
             var dateObject = new Date(formattedTime);
 
             dates.push(
@@ -240,7 +249,6 @@ displayAverage = async () => {
 
         var nowValues = {};
 
-        nowValues = Object.entries(averageChangeNow)
 
         let average = 0;
         const calcPercentageDiff = (from, to) => {
@@ -248,42 +256,52 @@ displayAverage = async () => {
             return Math.round(per * 100) / 100;
         };
 
-        averageChangeNow.fcp = ((averageObject.now[0] + averageObject.now[5] + averageObject.now[10]) / 3);
-        averageChangeNow.lcp = ((averageObject.now[1] + averageObject.now[6] + averageObject.now[11]) / 3);
-        averageChangeNow.tbt = ((averageObject.now[2] + averageObject.now[7] + averageObject.now[12]) / 3);
-        averageChangeNow.cls = ((averageObject.now[3] + averageObject.now[8] + averageObject.now[13]) / 3);
-        averageChangeNow.tti = ((averageObject.now[4] + averageObject.now[9] + averageObject.now[14]) / 3);
+
+
+        nowValues = Object.entries(averageChangeNow)
+
 
         console.log("\x1b[37m", '');
-        console.log('Average for FCP was: ' + Math.round(readRecentAverageReport.fcp * 100) / 100);
-        console.log('Average for FCP now: ' + Math.round(averageChangeNow.fcp * 100) / 100);
+        console.log('Average for FCP was: ' + Math.round(((readRecentAverageReport.fcp + Number.EPSILON) * 100) / 100) / 1000 + ' seconds');
+        console.log('Average for FCP now: ' + Math.round(((averageChangeNow.fcp + Number.EPSILON) * 100) / 100) / 1000 + ' seconds');
         average = displayHelper((calcPercentageDiff(readRecentAverageReport.fcp, averageChangeNow.fcp)))
         console.log(logColor, 'Changed: ' + average)
 
         console.log("\x1b[37m", '');
-        console.log('Average for LCP was: ' + Math.round(readRecentAverageReport.lcp * 100) / 100);
-        console.log('Average for LCP now: ' + Math.round(averageChangeNow.lcp * 100) / 100);
+        console.log('Average for LCP was: ' + Math.round(((readRecentAverageReport.lcp + Number.EPSILON) * 100) / 100) / 1000 + ' seconds');
+        console.log('Average for LCP now: ' + Math.round(((averageChangeNow.lcp + Number.EPSILON) * 100) / 100) / 1000 + ' seconds')
         average = displayHelper((calcPercentageDiff(readRecentAverageReport.lcp, averageChangeNow.lcp)))
         console.log(logColor, 'Changed: ' + average)
 
         console.log("\x1b[37m", '');
-        console.log('Average for TBT was: ' + Math.round(readRecentAverageReport.tbt * 100) / 100);
-        console.log('Average for TBT now: ' + Math.round(averageChangeNow.tbt * 100) / 100);
+        console.log('Average for TBT was: ' + Math.round(readRecentAverageReport.tbt * 100) / 100 + ' ms');
+        console.log('Average for TBT now: ' + Math.round(averageChangeNow.tbt * 100) / 100 + ' ms');
         average = displayHelper((calcPercentageDiff(readRecentAverageReport.tbt, averageChangeNow.tbt)))
         console.log(logColor, 'Changed: ' + average)
 
         console.log("\x1b[37m", '');
-        console.log('Average for CLS was: ' + Math.round(readRecentAverageReport.cls * 100) / 100);
+        console.log('Average for CLS was: ' + Math.round(readRecentAverageReport.cls) / 100);
         console.log('Average for CLS now: ' + Math.round(averageChangeNow.cls * 100) / 100);
         average = displayHelper((calcPercentageDiff(readRecentAverageReport.cls, averageChangeNow.cls)))
         console.log(logColor, 'Changed: ' + average)
 
         console.log("\x1b[37m", '');
-        console.log('Average for TTI was: ' + Math.round(readRecentAverageReport.tti * 100) / 100);
-        console.log('Average for TTI now: ' + Math.round(averageChangeNow.tti * 100) / 100);
+        console.log('Average for TTI was: ' + Math.round(((readRecentAverageReport.tti + Number.EPSILON) * 100) / 100) / 1000 + ' seconds');
+        console.log('Average for TTI now: ' + Math.round(((averageChangeNow.tti + Number.EPSILON) * 100) / 100) / 1000 + ' seconds');
         average = displayHelper((calcPercentageDiff(readRecentAverageReport.tti, averageChangeNow.tti)))
         console.log(logColor, 'Changed: ' + average)
 
+    }
+    else {
+        console.log('\x1b[33m', '');
+        console.log('\x1b[33m', "First Average run for this URL")
+        console.log('\x1b[33m', "Nothing to compare with - the next run will run comparison to this")
+        console.log('\x1b[33m', '...... ...... ...... ...... ');
+        console.log('\x1b[37m', 'Average for FCP: ' + Math.round(((averageChangeNow.fcp + Number.EPSILON) * 100) / 100) / 1000 + ' seconds');
+        console.log('\x1b[37m', 'Average for LCP: ' + Math.round(((averageChangeNow.lcp + Number.EPSILON) * 100) / 100) / 1000 + ' seconds')
+        console.log('\x1b[37m', 'Average for TBT: ' + Math.round(averageChangeNow.tbt * 100) / 100 + ' ms');
+        console.log('\x1b[37m', 'Average for CLS: ' + Math.round(averageChangeNow.cls * 100) / 100);
+        console.log('\x1b[37m', 'Average for TTI: ' + Math.round(((averageChangeNow.tti + Number.EPSILON) * 100) / 100) / 1000 + ' seconds');
     }
 
     var currentDateTime = new Date();
@@ -295,4 +313,6 @@ displayAverage = async () => {
             if (err) throw err;
         }
     );
+    console.log("\x1b[37m", '');
+
 }
