@@ -10,6 +10,8 @@ const G = require("glob");
 const { sync } = require("glob");
 const averageObject = { was: [], now: [] }
 var dirName;
+var logColor = '\x1b[37m';
+
 
 
 const launchChromeAndRunLighthouse = url => {
