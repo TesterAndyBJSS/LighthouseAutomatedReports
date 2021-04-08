@@ -84,10 +84,6 @@ const compareReports = (from, to) => {
 
             averageObject.was.push(fromRead);
             averageObject.now.push(nowRead);
-
-            fs.appendFile("runLogResults.json", title + '\n' + fromRead + '\n' + nowRead + '\n', err => {
-                if (err) throw err;
-            });
         }
     }
 };
